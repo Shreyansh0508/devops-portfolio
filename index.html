@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>shreyansh@0508:~$ whoami</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;0,800;1,400&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- SCAN LINE OVERLAY -->
+<div class="scanlines"></div>
+<canvas id="grid-canvas"></canvas>
+
+<!-- CURSOR -->
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-brand">
+    <span class="prompt">shreyansh@0508</span><span class="sep">:</span><span class="path">~</span><span class="sep">$</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#about"      class="nav-cmd"><span class="cmd-prefix">./</span>about</a></li>
+    <li><a href="#experience" class="nav-cmd"><span class="cmd-prefix">./</span>experience</a></li>
+    <li><a href="#projects"   class="nav-cmd"><span class="cmd-prefix">./</span>projects</a></li>
+    <li><a href="#skills"     class="nav-cmd"><span class="cmd-prefix">./</span>skills</a></li>
+    <li><a href="#contact"    class="nav-cta">ssh contact</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-menu" id="mob-menu">
+  <a href="#about"      class="mob-cmd">./about</a>
+  <a href="#experience" class="mob-cmd">./experience</a>
+  <a href="#projects"   class="mob-cmd">./projects</a>
+  <a href="#skills"     class="mob-cmd">./skills</a>
+  <a href="#contact"    class="mob-cmd">ssh contact</a>
+</div>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+
+  <!-- LEFT: Main terminal -->
+  <div class="hero-left">
+
+    <!-- System header -->
+    <div class="sys-header fade-up" data-delay="0">
+      <div class="sys-badge">
+        <span class="sys-dot green"></span>
+        <span class="sys-text">SYSTEM ONLINE</span>
+      </div>
+      <div class="sys-uptime"><span class="label">UPTIME</span> <span id="uptime" class="val green">00:00:00</span></div>
+    </div>
+
+    <!-- Big name -->
+    <div class="hero-name-wrap fade-up" data-delay="80">
+      <div class="hero-name">
+        <span class="n-first">SHREYANSH</span>
+        <span class="n-last">SINGH<span class="blink-cursor">█</span></span>
+      </div>
+      <div class="hero-role-line">
+        <span class="role-tag">Associate DevOps Engineer</span>
+        <span class="role-sep">·</span>
+        <span class="role-co">SAP Labs India</span>
+        <span class="role-sep">·</span>
+        <span class="role-loc">Bangalore</span>
+      </div>
+    </div>
+
+    <!-- Terminal window -->
+    <div class="term-window fade-up" data-delay="160">
+      <div class="term-chrome">
+        <div class="tc-dots"><span class="tcd red"></span><span class="tcd yellow"></span><span class="tcd green"></span></div>
+        <div class="tc-title">bash — 80×24</div>
+        <div class="tc-right">zsh 5.9</div>
+      </div>
+      <div class="term-body" id="term-body">
+        <div class="term-line"><span class="t-prompt">shreyansh@0508:~$</span> <span class="t-cmd">whoami --verbose</span></div>
+        <div class="term-output" id="term-out"></div>
+        <div class="term-line live" id="term-live" style="display:none">
+          <span class="t-prompt">shreyansh@0508:~$</span> <span class="t-cursor-blink">█</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA row -->
+    <div class="hero-ctas fade-up" data-delay="300">
+      <a href="#experience" class="btn-run magnetic">
+        <span class="btn-icon">▶</span> run ./experience.sh
+      </a>
+      <a href="#contact" class="btn-ssh magnetic">
+        <span class="btn-icon">⌗</span> ssh get-in-touch
+      </a>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: Live metrics dashboard -->
+  <div class="hero-right fade-up" data-delay="200">
+
+    <div class="dashboard">
+      <div class="dash-header">
+        <span class="dash-title">● LIVE METRICS</span>
+        <span class="dash-env">prod-k8s-cluster</span>
+      </div>
+
+      <!-- Metric rows -->
+      <div class="metric-row">
+        <span class="m-label">DEPLOYMENTS</span>
+        <div class="m-bar-wrap"><div class="m-bar" data-w="88" style="--c:#00ff41"></div></div>
+        <span class="m-val green">88%</span>
+      </div>
+      <div class="metric-row">
+        <span class="m-label">CI/CD SUCCESS</span>
+        <div class="m-bar-wrap"><div class="m-bar" data-w="94" style="--c:#00d4ff"></div></div>
+        <span class="m-val cyan">94%</span>
+      </div>
+      <div class="metric-row">
+        <span class="m-label">INFRA UPTIME</span>
+        <div class="m-bar-wrap"><div class="m-bar" data-w="99" style="--c:#ffb800"></div></div>
+        <span class="m-val amber">99%</span>
+      </div>
+
+      <div class="dash-divider"></div>
+
+      <!-- Pod status grid -->
+      <div class="pod-section">
+        <div class="pod-header"><span class="t-dim">$ kubectl get pods -n production</span></div>
+        <div class="pod-table">
+          <div class="pod-row header">
+            <span>NAME</span><span>READY</span><span>STATUS</span><span>AGE</span>
+          </div>
+          <div class="pod-row">
+            <span class="pod-name">hana-cloud-<span class="pod-hash">a3f2</span></span>
+            <span class="pod-ready">1/1</span>
+            <span class="pod-status running">Running</span>
+            <span class="pod-age">14d</span>
+          </div>
+          <div class="pod-row">
+            <span class="pod-name">terraform-<span class="pod-hash">b9c1</span></span>
+            <span class="pod-ready">1/1</span>
+            <span class="pod-status running">Running</span>
+            <span class="pod-age">7d</span>
+          </div>
+          <div class="pod-row">
+            <span class="pod-name">jenkins-<span class="pod-hash">e7d4</span></span>
+            <span class="pod-ready">1/1</span>
+            <span class="pod-status running">Running</span>
+            <span class="pod-age">21d</span>
+          </div>
+          <div class="pod-row">
+            <span class="pod-name">monitoring-<span class="pod-hash">f2a8</span></span>
+            <span class="pod-ready">2/2</span>
+            <span class="pod-status running">Running</span>
+            <span class="pod-age">30d</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-divider"></div>
+
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about" class="section">
+  <div class="container">
+    <div class="sec-label fade-up"># SECTION 01 — ABOUT</div>
+
+    <div class="about-grid">
+
+      <!-- YAML config card -->
+      <div class="term-window fade-up">
+        <div class="term-chrome">
+          <div class="tc-dots"><span class="tcd red"></span><span class="tcd yellow"></span><span class="tcd green"></span></div>
+          <div class="tc-title">engineer.yaml</div>
+        </div>
+        <div class="term-body yaml-body">
+<pre class="yaml-code"><span class="y-key">apiVersion</span><span class="y-sep">:</span> <span class="y-str">engineer/v1</span>
+<span class="y-key">kind</span><span class="y-sep">:</span> <span class="y-str">DevOpsEngineer</span>
+<span class="y-key">metadata</span><span class="y-sep">:</span>
+  <span class="y-key">name</span><span class="y-sep">:</span> <span class="y-str">Shreyansh Singh</span>
+  <span class="y-key">location</span><span class="y-sep">:</span> <span class="y-str">Bangalore, India</span>
+  <span class="y-key">status</span><span class="y-sep">:</span> <span class="y-green">Active</span>
+<span class="y-key">spec</span><span class="y-sep">:</span>
+  <span class="y-key">role</span><span class="y-sep">:</span> <span class="y-str">Associate DevOps Engineer</span>
+  <span class="y-key">company</span><span class="y-sep">:</span> <span class="y-str">SAP Labs India</span>
+  <span class="y-key">focus</span><span class="y-sep">:</span>
+    - <span class="y-str">Cloud-Native Infrastructure</span>
+    - <span class="y-str">CI/CD Automation</span>
+    - <span class="y-str">Multi-Cloud Deployments</span>
+    - <span class="y-str">Kubernetes Orchestration</span>
+  <span class="y-key">clouds</span><span class="y-sep">:</span> <span class="y-list">[AWS, Azure, GCP]</span>
+  <span class="y-key">experience</span><span class="y-sep">:</span> <span class="y-num">3</span> <span class="y-comment"># internships</span>
+  <span class="y-key">impact</span><span class="y-sep">:</span>
+    <span class="y-key">deployTime</span><span class="y-sep">:</span> <span class="y-green">-20%</span>
+    <span class="y-key">releaseFreq</span><span class="y-sep">:</span> <span class="y-green">+30%</span>
+    <span class="y-key">issueRate</span><span class="y-sep">:</span> <span class="y-green">-25%</span>
+<span class="y-key">conditions</span><span class="y-sep">:</span>
+  - <span class="y-key">type</span><span class="y-sep">:</span> <span class="y-green">Available</span>
+    <span class="y-key">message</span><span class="y-sep">:</span> <span class="y-str">Open to opportunities</span></pre>
+        </div>
+      </div>
+
+      <!-- Education kubectl output -->
+      <div class="term-window fade-up" data-delay="100">
+        <div class="term-chrome">
+          <div class="tc-dots"><span class="tcd red"></span><span class="tcd yellow"></span><span class="tcd green"></span></div>
+          <div class="tc-title">bash — education</div>
+        </div>
+        <div class="term-body">
+          <div class="term-line"><span class="t-prompt">$</span> <span class="t-cmd">kubectl get education --sort-by=year</span></div>
+          <div class="kubectl-table">
+            <div class="kt-row kt-header">
+              <span>INSTITUTION</span><span>DEGREE</span><span>SCORE</span><span>YEAR</span>
+            </div>
+            <div class="kt-row">
+              <span class="kt-name">rv-college-eng</span>
+              <span class="kt-deg">B.E. EEE</span>
+              <span class="kt-score green">8.20 CGPA</span>
+              <span class="kt-year">2025</span>
+            </div>
+            <div class="kt-row">
+              <span class="kt-name">allahabad-pub-school</span>
+              <span class="kt-deg">XII</span>
+              <span class="kt-score green">93.8%</span>
+              <span class="kt-year">2020</span>
+            </div>
+            <div class="kt-row">
+              <span class="kt-name">allahabad-pub-school</span>
+              <span class="kt-deg">X</span>
+              <span class="kt-score green">91.0%</span>
+              <span class="kt-year">2018</span>
+            </div>
+          </div>
+          <div class="term-gap"></div>
+          <div class="term-line"><span class="t-prompt">$</span> <span class="t-cmd">cat about.txt</span></div>
+          <div class="cat-output">
+            <p>Working on deployment of <span class="hl">Vaults</span> for secrets management
+            across critical tooling, and building <span class="hl">automation scripts</span>
+            to streamline processes and reduce manual overhead.</p>
+            <p>Associate DevOps Engineer at <span class="hl">SAP Labs India</span> —
+            deploying cloud services across multiple global regions, including
+            sovereign and private cloud setups.</p>
+            <p>On-call for <span class="hl">Developer on Duty</span> shifts — triaging
+            incidents and keeping production reliable around the clock.</p>
+            <p>Roots in <span class="hl">JavaScript &amp; SAP UI5</span> development —
+            full-stack mindset, infrastructure-first execution.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== EXPERIENCE ===== -->
+<section id="experience" class="section section-alt">
+  <div class="container">
+    <div class="sec-label fade-up"># SECTION 02 — EXPERIENCE</div>
+
+    <!-- CI/CD Pipeline visual -->
+    <div class="pipeline-wrap fade-up">
+      <div class="pipeline-label">CI/CD PIPELINE — career.yml</div>
+      <div class="pipeline">
+        <div class="pipe-stage active">
+          <div class="ps-icon">✓</div>
+          <div class="ps-name">SWE INTERN</div>
+          <div class="ps-date">May '24</div>
+        </div>
+        <div class="pipe-line animated"></div>
+        <div class="pipe-stage active">
+          <div class="ps-icon">✓</div>
+          <div class="ps-name">DEVOPS INTERN</div>
+          <div class="ps-date">Jan '25</div>
+        </div>
+        <div class="pipe-line animated"></div>
+        <div class="pipe-stage current">
+          <div class="ps-icon ps-pulse">●</div>
+          <div class="ps-name">DEVOPS ENG</div>
+          <div class="ps-date">Jul '25 →</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Experience cards as deployment logs -->
+    <div class="exp-stack">
+
+      <div class="deploy-card fade-up">
+        <div class="deploy-header">
+          <div class="deploy-meta">
+            <span class="deploy-status success">● SUCCESS</span>
+            <span class="deploy-id font-mono">deploy #003</span>
+          </div>
+          <div class="deploy-time font-mono">Jul 2025 — Present</div>
+        </div>
+        <div class="deploy-title">
+          <h3>Associate DevOps Engineer</h3>
+          <span class="deploy-org">SAP Labs India</span>
+        </div>
+        <div class="deploy-log">
+          <div class="log-line"><span class="log-tag INFO">INFO</span> Deploying HANA Cloud across <strong>AWS · Azure · GCP</strong> in multiple global regions</div>
+          <div class="log-line"><span class="log-tag SUCCESS">SUCCESS</span> Automated deployment with Docker/K8s/Terraform → deploy time <strong>↓20%</strong>, release freq <strong>↑30%</strong></div>
+          <div class="log-line"><span class="log-tag SUCCESS">SUCCESS</span> Optimized CI/CD pipelines → environment issues <strong>↓25%</strong></div>
+        </div>
+        <div class="deploy-tags">
+          <span>Kubernetes</span><span>Terraform</span><span>Docker</span>
+          <span>AWS</span><span>Azure</span><span>GCP</span><span>Jenkins</span>
+        </div>
+      </div>
+
+      <div class="deploy-card fade-up">
+        <div class="deploy-header">
+          <div class="deploy-meta">
+            <span class="deploy-status success">● SUCCESS</span>
+            <span class="deploy-id font-mono">deploy #002</span>
+          </div>
+          <div class="deploy-time font-mono">Jan 2025 — Jul 2025</div>
+        </div>
+        <div class="deploy-title">
+          <h3>DevOps Intern <span class="intern-label">Spring</span></h3>
+          <span class="deploy-org">SAP Labs India</span>
+        </div>
+        <div class="deploy-log">
+          <div class="log-line"><span class="log-tag INFO">INFO</span> Contributed to HANA Cloud DC deployments across <strong>GCP · Azure · AWS</strong></div>
+          <div class="log-line"><span class="log-tag INFO">INFO</span> Supported and optimized CI/CD pipelines across multiple environments</div>
+          <div class="log-line"><span class="log-tag INFO">INFO</span> Hands-on: <strong>Docker, Kubernetes, Terraform, SAP BTP, HANA Cloud</strong></div>
+        </div>
+        <div class="deploy-tags">
+          <span>SAP HANA Cloud</span><span>SAP BTP</span>
+          <span>Terraform</span><span>Docker</span><span>Kubernetes</span>
+        </div>
+      </div>
+
+      <div class="deploy-card fade-up">
+        <div class="deploy-header">
+          <div class="deploy-meta">
+            <span class="deploy-status success">● SUCCESS</span>
+            <span class="deploy-id font-mono">deploy #001</span>
+          </div>
+          <div class="deploy-time font-mono">May 2024 — Jul 2024</div>
+        </div>
+        <div class="deploy-title">
+          <h3>SDE Intern <span class="intern-label summer">Summer</span></h3>
+          <span class="deploy-org">SAP Labs India</span>
+        </div>
+        <div class="deploy-log">
+          <div class="log-line"><span class="log-tag INFO">INFO</span> Built tool to fetch <strong>500+ OData V2/V4 services</strong> in real-time from SAP Business Accelerator Hub</div>
+          <div class="log-line"><span class="log-tag INFO">INFO</span> Added one-click entity set fetching, UI upgrades using <strong>SAP BAS &amp; BTP</strong></div>
+          <div class="log-line"><span class="log-tag SUCCESS">SUCCESS</span> Constructed end-to-end <strong>100% automated</strong> performance testing interface</div>
+        </div>
+        <div class="deploy-tags">
+          <span>SAP UI5</span><span>JavaScript</span>
+          <span>SAP BAS</span><span>SAP BTP</span><span>OData</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROJECTS ===== -->
+<section id="projects" class="section">
+  <div class="container">
+    <div class="sec-label fade-up"># SECTION 03 — PROJECTS</div>
+    <div class="sec-cmd fade-up"><span class="t-dim">$ docker ps --filter status=built</span></div>
+
+    <div class="containers-grid">
+
+      <div class="container-card fade-up">
+        <div class="cc-top">
+          <div class="cc-header">
+            <span class="cc-icon">🤖</span>
+            <div class="cc-port"><span class="t-dim">PORT</span> <span class="cyan">8080</span></div>
+          </div>
+          <div class="cc-id font-mono">CONTAINER ID: a3f219b</div>
+          <div class="cc-tag">Self Project</div>
+        </div>
+        <h3 class="cc-name">face-recognition-<br/>attendance-system</h3>
+        <p class="cc-desc">Deep learning powered facial recognition for automated attendance. CNNs trained for real-time detection.</p>
+        <div class="cc-stats">
+          <div class="cc-stat"><span class="ccs-val green">95%+</span><span class="ccs-lbl">Accuracy</span></div>
+          <div class="cc-stat"><span class="ccs-val cyan">Real-Time</span><span class="ccs-lbl">Detection</span></div>
+        </div>
+        <div class="cc-stack">
+          <span>Python</span><span>OpenCV</span><span>CNN</span><span>NumPy</span>
+        </div>
+        <div class="cc-status-bar">
+          <span class="cs-dot green"></span>
+          <span class="cs-text font-mono">STATUS: Up 47 days</span>
+        </div>
+      </div>
+
+      <div class="container-card fade-up" data-delay="80">
+        <div class="cc-top">
+          <div class="cc-header">
+            <span class="cc-icon">🧠</span>
+            <div class="cc-port"><span class="t-dim">PORT</span> <span class="cyan">3000</span></div>
+          </div>
+          <div class="cc-id font-mono">CONTAINER ID: b9c134e</div>
+          <div class="cc-tag cyan-tag">Chrome Extension</div>
+        </div>
+        <h3 class="cc-name">virtual-study-<br/>buddy-extension</h3>
+        <p class="cc-desc">Chrome Extension with customizable avatar for real-time reminders, study techniques, and productivity tracking.</p>
+        <div class="cc-stats">
+          <div class="cc-stat"><span class="ccs-val green">Live</span><span class="ccs-lbl">Interactive</span></div>
+          <div class="cc-stat"><span class="ccs-val cyan">JS</span><span class="ccs-lbl">Powered</span></div>
+        </div>
+        <div class="cc-stack">
+          <span>JavaScript</span><span>HTML/CSS</span><span>Chrome API</span>
+        </div>
+        <div class="cc-status-bar">
+          <span class="cs-dot green"></span>
+          <span class="cs-text font-mono">STATUS: Up 12 days</span>
+        </div>
+      </div>
+
+      <div class="container-card fade-up" data-delay="160">
+        <div class="cc-top">
+          <div class="cc-header">
+            <span class="cc-icon">⚡</span>
+            <div class="cc-port"><span class="t-dim">PORT</span> <span class="cyan">4004</span></div>
+          </div>
+          <div class="cc-id font-mono">CONTAINER ID: e7d4f12</div>
+          <div class="cc-tag amber-tag">SAP Internship</div>
+        </div>
+        <h3 class="cc-name">odata-services-<br/>automation-tool</h3>
+        <p class="cc-desc">Fetches, tests &amp; displays 500+ OData V2/V4 services in real-time. One-click entity sets + automated performance tests.</p>
+        <div class="cc-stats">
+          <div class="cc-stat"><span class="ccs-val green">500+</span><span class="ccs-lbl">Services</span></div>
+          <div class="cc-stat"><span class="ccs-val cyan">100%</span><span class="ccs-lbl">Automated</span></div>
+        </div>
+        <div class="cc-stack">
+          <span>SAP UI5</span><span>JavaScript</span><span>OData V2/V4</span>
+        </div>
+        <div class="cc-status-bar">
+          <span class="cs-dot green"></span>
+          <span class="cs-text font-mono">STATUS: Up 180 days</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== SKILLS ===== -->
+<section id="skills" class="section section-alt">
+  <div class="container">
+    <div class="sec-label fade-up"># SECTION 04 — SKILLS</div>
+    <div class="sec-cmd fade-up"><span class="t-dim">$ kubectl get nodes --show-labels</span></div>
+
+    <div class="skills-wrap">
+
+      <!-- Node grid -->
+      <div class="nodes-grid fade-up">
+        <div class="node-card healthy">
+          <div class="node-header">
+            <span class="node-dot"></span>
+            <span class="node-name font-mono">cloud-devops</span>
+            <span class="node-status">Ready</span>
+          </div>
+          <div class="node-pods">
+            <span class="npod">🐳 Docker</span>
+            <span class="npod">⚙️ Kubernetes</span>
+            <span class="npod">🌿 Terraform</span>
+            <span class="npod">🔧 Jenkins</span>
+            <span class="npod">🌱 Gardener</span>
+            <span class="npod">🔵 AWS</span>
+            <span class="npod">🟦 Azure</span>
+            <span class="npod">🔴 GCP</span>
+            <span class="npod">🏢 SAP Cloud Infrastructure</span>
+          </div>
+          <div class="node-meta font-mono"><span class="t-dim">CPU:</span> <span class="green">High</span>  <span class="t-dim">MEM:</span> <span class="green">Optimized</span></div>
+        </div>
+
+        <div class="node-card healthy">
+          <div class="node-header">
+            <span class="node-dot"></span>
+            <span class="node-name font-mono">languages</span>
+            <span class="node-status">Ready</span>
+          </div>
+          <div class="node-pods">
+            <span class="npod">⚡ JavaScript</span>
+            <span class="npod">🐍 Python</span>
+            <span class="npod">⚙️ C++</span>
+            <span class="npod">🗄️ SQL</span>
+            <span class="npod">🌐 HTML/CSS</span>
+            <span class="npod">🔷 SAP UI5</span>
+            <span class="npod">⚛️ React</span>
+            <span class="npod">📄 XML</span>
+          </div>
+          <div class="node-meta font-mono"><span class="t-dim">CPU:</span> <span class="green">High</span>  <span class="t-dim">MEM:</span> <span class="green">Optimized</span></div>
+        </div>
+
+        <div class="node-card healthy">
+          <div class="node-header">
+            <span class="node-dot"></span>
+            <span class="node-name font-mono">tools-platforms</span>
+            <span class="node-status">Ready</span>
+          </div>
+          <div class="node-pods">
+            <span class="npod">🐙 Git/GitHub</span>
+            <span class="npod">🏢 SAP BTP</span>
+            <span class="npod">🔧 SAP BAS</span>
+            <span class="npod">☁️ HANA Cloud</span>
+            <span class="npod">💻 VS Code</span>
+          </div>
+          <div class="node-meta font-mono"><span class="t-dim">CPU:</span> <span class="green">High</span>  <span class="t-dim">MEM:</span> <span class="green">Optimized</span></div>
+        </div>
+      </div>
+
+      <!-- Skill bars -->
+      <div class="skill-bars fade-up" data-delay="100">
+        <div class="sbar-title font-mono">$ htop — skill utilization</div>
+        <div class="sbar-row"><span class="sbar-lbl">Kubernetes</span><div class="sbar-track"><div class="sbar-fill" data-w="92" style="--c:#00ff41"></div></div><span class="sbar-pct green">92%</span></div>
+        <div class="sbar-row"><span class="sbar-lbl">Terraform</span><div class="sbar-track"><div class="sbar-fill" data-w="88" style="--c:#00d4ff"></div></div><span class="sbar-pct cyan">88%</span></div>
+        <div class="sbar-row"><span class="sbar-lbl">Docker</span><div class="sbar-track"><div class="sbar-fill" data-w="95" style="--c:#00ff41"></div></div><span class="sbar-pct green">95%</span></div>
+        <div class="sbar-row"><span class="sbar-lbl">Jenkins</span><div class="sbar-track"><div class="sbar-fill" data-w="85" style="--c:#ffb800"></div></div><span class="sbar-pct amber">85%</span></div>
+        <div class="sbar-row"><span class="sbar-lbl">AWS/Azure/GCP</span><div class="sbar-track"><div class="sbar-fill" data-w="90" style="--c:#00d4ff"></div></div><span class="sbar-pct cyan">90%</span></div>
+        <div class="sbar-row"><span class="sbar-lbl">Python</span><div class="sbar-track"><div class="sbar-fill" data-w="82" style="--c:#00ff41"></div></div><span class="sbar-pct green">82%</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== LEADERSHIP ===== -->
+<section id="leadership" class="section">
+  <div class="container">
+    <div class="sec-label fade-up"># SECTION 05 — LEADERSHIP</div>
+
+    <div class="leader-terminal fade-up">
+      <div class="term-chrome">
+        <div class="tc-dots"><span class="tcd red"></span><span class="tcd yellow"></span><span class="tcd green"></span></div>
+        <div class="tc-title">$ cat leadership.log</div>
+      </div>
+      <div class="term-body lt-body">
+        <div class="lt-header">
+          <div>
+            <div class="lt-title">🚀 Entrepreneurship Cell, RVCE</div>
+            <div class="lt-role font-mono">role: President  |  tenure: Nov 2023 — Nov 2024</div>
+          </div>
+          <div class="lt-badge">PRESIDENT</div>
+        </div>
+        <div class="lt-metrics">
+          <div class="lt-metric">
+            <span class="ltm-num green">100+</span>
+            <span class="ltm-lbl">Members Led</span>
+          </div>
+          <div class="lt-metric">
+            <span class="ltm-num cyan">10K+</span>
+            <span class="ltm-lbl">Students Impacted</span>
+          </div>
+          <div class="lt-metric">
+            <span class="ltm-num amber">₹35L+</span>
+            <span class="ltm-lbl">Sponsorships</span>
+          </div>
+        </div>
+        <div class="lt-logs">
+          <div class="log-line"><span class="log-tag SUCCESS">SUCCESS</span> Led team for <strong>ESummit 2024</strong> — speaker sessions, panels, cultural events, entrepreneurial competitions</div>
+          <div class="log-line"><span class="log-tag INFO">INFO</span> Convenor for <strong>EMBARK 2024</strong> — 70-80 students, startup fairs, pitch deck workshops</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact" class="section section-alt">
+  <div class="container contact-wrap">
+    <div class="sec-label fade-up"># SECTION 06 — CONTACT</div>
+
+    <div class="contact-terminal fade-up">
+      <div class="term-chrome">
+        <div class="tc-dots"><span class="tcd red"></span><span class="tcd yellow"></span><span class="tcd green"></span></div>
+        <div class="tc-title">bash — contact.sh</div>
+      </div>
+      <div class="term-body ct-body">
+        <div class="ct-intro">
+          <span class="t-prompt">shreyansh@0508:~$</span> <span class="t-cmd">echo "Open to exciting opportunities &amp; collabs"</span>
+        </div>
+        <div class="ct-out green">Open to exciting opportunities &amp; collabs</div>
+
+        <div class="contact-links">
+          <a href="mailto:singhshreyansh80@gmail.com" class="contact-cmd magnetic">
+            <span class="t-prompt">$</span>
+            <span class="contact-method">mail</span>
+            <span class="contact-val">singhshreyansh80@gmail.com</span>
+            <span class="contact-arrow">→</span>
+          </a>
+          <a href="https://www.linkedin.com/in/shreyansh-singh-415150212/" target="_blank" class="contact-cmd magnetic">
+            <span class="t-prompt">$</span>
+            <span class="contact-method">open</span>
+            <span class="contact-val">linkedin.com/in/shreyansh-singh-415150212</span>
+            <span class="contact-arrow">→</span>
+          </a>
+          <a href="tel:+918317076730" class="contact-cmd magnetic">
+            <span class="t-prompt">$</span>
+            <span class="contact-method">call</span>
+            <span class="contact-val">+91-8317076730</span>
+            <span class="contact-arrow">→</span>
+          </a>
+        </div>
+
+        <div class="ct-footer font-mono">
+          <span class="t-prompt">shreyansh@0508:~$</span> <span class="t-cursor-blink">█</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner" style="width:100%;text-align:center;">
+    <span class="foot-prompt font-mono">shreyansh@0508:~$</span>
+    <span class="foot-cmd font-mono"> Designed &amp; Built by <span class="green">Shreyansh Singh</span> · SAP Labs India · 2026</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
